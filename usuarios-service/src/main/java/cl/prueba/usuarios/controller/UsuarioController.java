@@ -2,6 +2,7 @@ package cl.prueba.usuarios.controller;
 
 import cl.prueba.usuarios.model.Usuario;
 import cl.prueba.usuarios.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,12 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Usuario crear(@RequestBody Usuario usuario) {
+    public Usuario crear(@Valid @RequestBody Usuario usuario) {
         return usuarioService.crear(usuario);
     }
 
     @PutMapping("/{id}")
-    public Usuario actualizar(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public Usuario actualizar(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
         return usuarioService.actualizar(id, usuario);
     }
 

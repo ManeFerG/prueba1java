@@ -2,6 +2,7 @@ package cl.prueba.pedidos.controller;
 
 import cl.prueba.pedidos.model.Pedido;
 import cl.prueba.pedidos.service.PedidoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,12 @@ public class PedidoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Pedido crear(@RequestBody Pedido pedido) {
+    public Pedido crear(@Valid @RequestBody Pedido pedido) {
         return pedidoService.crear(pedido);
     }
 
     @PutMapping("/{id}")
-    public Pedido actualizar(@PathVariable Long id, @RequestBody Pedido pedido) {
+    public Pedido actualizar(@PathVariable Long id, @Valid @RequestBody Pedido pedido) {
         return pedidoService.actualizar(id, pedido);
     }
 
@@ -41,5 +42,10 @@ public class PedidoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
         pedidoService.eliminar(id);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public List<Pedido> buscarPorUsuario(@PathVariable Long usuarioId) {
+        return pedidoService.listarPorUsuario(usuarioId);
     }
 }

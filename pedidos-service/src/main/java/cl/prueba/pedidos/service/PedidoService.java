@@ -22,6 +22,10 @@ public class PedidoService {
         return pedidoRepository.findAll();
     }
 
+    public List<Pedido> listarPorUsuario(Long usuarioId) {
+        return pedidoRepository.findByUsuarioId(usuarioId);
+    }
+
     public Pedido buscarPorId(Long id) {
         return pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado con id: " + id));
@@ -42,8 +46,16 @@ public class PedidoService {
         pedido.setDescripcion(datos.getDescripcion());
         pedido.setEstado(datos.getEstado());
         pedido.setTotal(datos.getTotal());
-        pedido.setUsuarioId(datos.getUsuarioId());
+        if (datos.getUsuario() != null) {
+            pedido.setUsuario(datos.getUsuario());
+        }
         return pedidoRepository.save(pedido);
+    }
+
+    public List<Pedido> buscarPorUsuario(Long usuarioId) {
+        // Este método se utiliza si necesitas buscar por ID de usuario
+        // En la BD se hace con el JOIN automático
+        return pedidoRepository.findByUsuarioId(usuarioId);
     }
 
     public void eliminar(Long id) {
