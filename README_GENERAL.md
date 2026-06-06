@@ -1,45 +1,303 @@
-# Prueba microservicios Spring Boot + JWT + PostgreSQL + Docker
+# Evaluación Parcial N°2 - Microservicios Spring Boot
 
-Proyecto basado en el diagrama de arquitectura de microservicios de la prueba 1.
+Proyecto desarrollado para la asignatura **Java: Diseño y Construcción de Soluciones Nativas en Nube (JVY0101)**.
+
+El sistema implementa microservicios en Java con Spring Boot, utilizando arquitectura por capas, persistencia con PostgreSQL, autenticación JWT, Docker Compose y pruebas mediante Postman.
+
+---
+
+## Integrantes
+
+* Consuelo Jerez
+* Valentina Gomez
+
+---
+
+## Repositorio
+
+Link del repositorio GitHub:
+
+https://github.com/ManeFerG/prueba1java
+
+---
+
+## Tecnologías utilizadas
+
+* Java 17
+* Spring Boot
+* Spring Web
+* Spring Data JPA
+* Spring Security
+* JWT
+* PostgreSQL
+* Docker
+* Docker Compose
+* Maven
+* Postman
+
+---
+
+## Estructura del proyecto
+
+```bash
+prueba1java/
+├── usuarios-service/
+│   ├── src/
+│   ├── pom.xml
+│   └── Dockerfile
+│
+├── pedidos-service/
+│   ├── src/
+│   ├── pom.xml
+│   └── Dockerfile
+│
+└── infra-docker/
+    ├── docker-compose.yml
+    └── init.sql
+```
+
+---
 
 ## Microservicios implementados
 
-Se implementan 2 microservicios backend:
+### 1. usuarios-service
 
-1. `usuarios-service`: usuarios, registro y login JWT.
-2. `pedidos-service`: CRUD de pedidos protegido con JWT.
+Microservicio encargado de la gestión de usuarios y autenticación.
 
-Esto cubre el 80% o más de los microservicios principales del diagrama, considerando que API Gateway no es obligatorio.
-
-## Seguridad JWT con llave secreta compartida
-
-El `usuarios-service` genera el token JWT durante el login. El `pedidos-service` valida ese token usando la misma llave secreta:
-
-```text
-JWT_SECRET=clave-super-secreta-de-prueba-para-firmar-jwt-2026
-```
-
-Por eso, el token generado en usuarios permite acceder a pedidos.
-
-## Levantar con Docker Compose
-
-Desde la carpeta `infra-docker`:
+Puerto local:
 
 ```bash
-docker compose up --build
+http://localhost:8081
 ```
 
-Servicios disponibles:
+Funcionalidades principales:
 
-- usuarios-service: `http://localhost:8081`
-- pedidos-service: `http://localhost:8082`
-- PostgreSQL: `localhost:5432`
+* Registro de usuarios.
+* Login de usuarios.
+* Generación de token JWT.
+* CRUD de usuarios.
+* Validaciones básicas.
+* Persistencia en base de datos PostgreSQL.
 
-## Prueba rápida en Postman
+---
 
-### 1. Login
+### 2. pedidos-service
 
-POST `http://localhost:8081/api/auth/login`
+Microservicio encargado de la gestión de pedidos.
+
+Puerto local:
+
+```bash
+http://localhost:8082
+```
+
+Funcionalidades principales:
+
+* Crear pedidos.
+* Listar pedidos.
+* Buscar pedidos por ID.
+* Buscar pedidos por usuario.
+* Actualizar pedidos.
+* Eliminar pedidos.
+* Validación de usuario asociado.
+* Persistencia en base de datos PostgreSQL.
+* Protección de endpoints mediante JWT.
+
+---
+
+## Arquitectura interna
+
+Cada microservicio utiliza una arquitectura por capas:
+
+```bash
+controller  -> Expone endpoints REST
+service     -> Contiene la lógica de negocio
+repository  -> Acceso a datos mediante Spring Data JPA
+model       -> Entidades JPA/Hibernate
+dto         -> Objetos para solicitudes y respuestas
+security    -> Configuración de seguridad y JWT
+```
+
+Esta estructura permite separar responsabilidades, facilitar el mantenimiento del código y seguir buenas prácticas de desarrollo con Spring Boot.
+
+---
+
+## Base de datos
+
+El proyecto utiliza PostgreSQL ejecutado mediante Docker.
+
+Bases de datos utilizadas:
+
+```bash
+usuarios_db
+pedidos_db
+```
+
+Tablas principales:
+
+```bash
+usuarios
+pedidos
+```
+
+El archivo `init.sql` se encarga de crear las bases de datos necesarias al levantar el contenedor de PostgreSQL.
+
+---
+
+## Requisitos previos
+
+Antes de ejecutar el proyecto, se debe tener instalado:
+
+* Docker Desktop
+* Git
+* Postman
+* Java 17, si se desea ejecutar localmente sin Docker
+* Maven, si se desea compilar manualmente
+
+---
+
+## Ejecución con Docker Compose
+
+Ingresar a la carpeta `infra-docker`:
+
+```bash
+cd infra-docker
+```
+
+Levantar todos los servicios:
+
+```bash
+docker compose up --build -d
+```
+
+Verificar que los contenedores estén corriendo:
+
+```bash
+docker ps
+```
+
+Deben aparecer los siguientes contenedores:
+
+```bash
+prueba-postgres
+usuarios-service
+pedidos-service
+```
+
+---
+
+## Verificación de PostgreSQL
+
+Entrar al contenedor de PostgreSQL:
+
+```bash
+docker exec -it prueba-postgres psql -U postgres
+```
+
+Listar bases de datos:
+
+```sql
+\l
+```
+
+Conectarse a la base de usuarios:
+
+```sql
+\c usuarios_db
+```
+
+Ver tablas:
+
+```sql
+\dt
+```
+
+Conectarse a la base de pedidos:
+
+```sql
+\c pedidos_db
+```
+
+Ver tablas:
+
+```sql
+\dt
+```
+
+Salir de PostgreSQL:
+
+```sql
+\q
+```
+
+---
+
+## Compilación con Maven
+
+Para compilar un microservicio manualmente, ingresar a su carpeta:
+
+```bash
+cd usuarios-service
+```
+
+Ejecutar:
+
+```bash
+mvn clean package
+```
+
+Para el microservicio de pedidos:
+
+```bash
+cd pedidos-service
+```
+
+Ejecutar:
+
+```bash
+mvn clean package
+```
+
+Esto genera el archivo `.jar` dentro de la carpeta `target`.
+
+---
+
+## Endpoints principales
+
+### usuarios-service
+
+URL base:
+
+```bash
+http://localhost:8081
+```
+
+### Registrar usuario
+
+```http
+POST /api/auth/register
+```
+
+Body:
+
+```json
+{
+  "nombre": "Consuelo Jerez",
+  "correo": "consu@test.cl",
+  "password": "123456",
+  "rol": "ADMIN"
+}
+```
+
+---
+
+### Login
+
+```http
+POST /api/auth/login
+```
+
+Body:
 
 ```json
 {
@@ -48,109 +306,297 @@ POST `http://localhost:8081/api/auth/login`
 }
 ```
 
-Copiar el valor de `token`.
+Respuesta esperada:
 
-### 2. Crear usuario con JWT
+```json
+{
+  "token": "TOKEN_JWT",
+  "tipo": "Bearer"
+}
+```
 
-POST `http://localhost:8081/api/usuarios`
+El token recibido debe utilizarse en Postman en:
 
-Header:
+```bash
+Authorization -> Bearer Token
+```
 
-```text
-Authorization: Bearer TOKEN
+---
+
+### Listar usuarios
+
+```http
+GET /api/usuarios
+```
+
+---
+
+### Buscar usuario por ID
+
+```http
+GET /api/usuarios/{id}
+```
+
+Ejemplo:
+
+```http
+GET /api/usuarios/1
+```
+
+---
+
+### Crear usuario
+
+```http
+POST /api/usuarios
 ```
 
 Body:
 
 ```json
 {
-  "nombre": "Consuelo Jerez",
-  "correo": "consuelo@demo.cl",
+  "nombre": "Pedro Perez",
+  "correo": "pedro@correo.cl",
   "password": "123456",
   "rol": "USER",
   "activo": true
 }
 ```
 
-### 3. Listar usuarios con JWT
+---
 
-GET `http://localhost:8081/api/usuarios`
+### Actualizar usuario
 
-Header:
-
-```text
-Authorization: Bearer TOKEN
-```
-
-### 4. Crear pedido con JWT
-
-POST `http://localhost:8082/api/pedidos`
-
-Header:
-
-```text
-Authorization: Bearer TOKEN
+```http
+PUT /api/usuarios/{id}
 ```
 
 Body:
 
 ```json
 {
-  "descripcion": "Pedido de prueba",
-  "estado": "PENDIENTE",
-  "total": 25990,
-  "usuarioId": 1
+  "nombre": "Pedro Perez Actualizado",
+  "correo": "pedro@correo.cl",
+  "password": "123456",
+  "rol": "USER",
+  "activo": true
 }
 ```
 
-### 5. Listar pedidos con JWT
+---
 
-GET `http://localhost:8082/api/pedidos`
+### Eliminar usuario
 
-Header:
-
-```text
-Authorization: Bearer TOKEN
+```http
+DELETE /api/usuarios/{id}
 ```
 
-## Comandos Maven
+---
 
-En cada microservicio:
+## Endpoints de pedidos-service
+
+URL base:
 
 ```bash
-mvn test
-mvn clean package
+http://localhost:8082
 ```
 
-## Generar imágenes Docker manualmente
+Para los endpoints protegidos se debe enviar el token JWT obtenido desde el login del microservicio de usuarios.
 
-En `usuarios-service`:
+En Postman:
 
 ```bash
-docker build -t usuarios-service:1.0 .
+Authorization -> Type -> Bearer Token
 ```
 
-En `pedidos-service`:
+---
+
+### Listar pedidos
+
+```http
+GET /api/pedidos
+```
+
+---
+
+### Buscar pedido por ID
+
+```http
+GET /api/pedidos/{id}
+```
+
+Ejemplo:
+
+```http
+GET /api/pedidos/1
+```
+
+---
+
+### Crear pedido
+
+```http
+POST /api/pedidos
+```
+
+Body:
+
+```json
+{
+  "descripcion": "notebook",
+  "estado": "PENDIENTE",
+  "total": 250500,
+  "usuarioId": 2
+}
+```
+
+---
+
+### Buscar pedidos por usuario
+
+```http
+GET /api/pedidos/usuario/{usuarioId}
+```
+
+Ejemplo:
+
+```http
+GET /api/pedidos/usuario/2
+```
+
+---
+
+### Actualizar pedido
+
+```http
+PUT /api/pedidos/{id}
+```
+
+Body:
+
+```json
+{
+  "descripcion": "notebook actualizado",
+  "estado": "PAGADO",
+  "total": 300000,
+  "usuarioId": 2
+}
+```
+
+---
+
+### Eliminar pedido
+
+```http
+DELETE /api/pedidos/{id}
+```
+
+---
+
+## Pruebas en Postman
+
+Orden recomendado para probar el sistema:
+
+1. Levantar los servicios con Docker Compose.
+2. Verificar los contenedores con `docker ps`.
+3. Registrar un usuario o utilizar el usuario demo.
+4. Realizar login en `usuarios-service`.
+5. Copiar el token JWT retornado.
+6. Configurar el token en Postman como Bearer Token.
+7. Probar CRUD de usuarios.
+8. Probar CRUD de pedidos.
+9. Verificar los registros en PostgreSQL.
+10. Realizar una prueba de error, por ejemplo enviar un pedido sin token o con datos inválidos.
+
+---
+
+## Usuario demo
+
+El sistema cuenta con un usuario demo para realizar pruebas:
+
+```json
+{
+  "correo": "admin@demo.cl",
+  "password": "123456"
+}
+```
+
+---
+
+## Comandos útiles de Docker
+
+Levantar todos los servicios:
 
 ```bash
-docker build -t pedidos-service:1.0 .
+docker compose up --build -d
 ```
 
-## Repositorios Git recomendados
+Ver contenedores activos:
 
-Como el requisito indica 1 repositorio por microservicio, se recomienda subir cada carpeta a un repositorio separado:
+```bash
+docker ps
+```
 
-- `usuarios-service` → repositorio `usuarios-service`
-- `pedidos-service` → repositorio `pedidos-service`
+Ver logs de usuarios-service:
 
-La carpeta `infra-docker` puede quedar en un tercer repositorio llamado `infra-docker` o se puede adjuntar como apoyo para ejecutar todo localmente.
+```bash
+docker logs usuarios-service
+```
 
-## Commits sugeridos en diferentes días
+Ver logs de pedidos-service:
 
-Ejemplo de historial para cada repositorio:
+```bash
+docker logs pedidos-service
+```
 
-1. `feat: crear estructura inicial del microservicio`
-2. `feat: agregar modelo repository service y controller`
-3. `feat: integrar JWT y seguridad`
-4. `feat: configurar persistencia PostgreSQL`
-5. `docs: agregar instrucciones Maven Docker y Postman`
+Detener servicios:
+
+```bash
+docker compose down
+```
+
+Detener servicios y eliminar volúmenes:
+
+```bash
+docker compose down -v
+```
+
+---
+
+## Evidencias de funcionamiento
+
+Durante las pruebas se evidencia:
+
+* Contenedores activos mediante Docker.
+* Conexión correcta a PostgreSQL.
+* Creación de tablas mediante JPA/Hibernate.
+* Registro y login de usuarios.
+* Generación y uso de token JWT.
+* CRUD completo de usuarios.
+* CRUD completo de pedidos.
+* Persistencia de datos en PostgreSQL.
+* Manejo de errores en solicitudes incorrectas.
+
+---
+
+## Control de versiones
+
+El proyecto fue versionado con Git y subido a GitHub.
+
+Se trabajó utilizando commits descriptivos para evidenciar el avance del desarrollo, por ejemplo:
+
+```bash
+feat: implementar usuarios-service con autenticacion JWT
+feat: crear pedidos-service con CRUD
+feat: configurar PostgreSQL con Docker Compose
+fix: corregir creacion de pedidos con usuario asociado
+docs: actualizar README con instrucciones de ejecucion
+```
+
+---
+
+## Consideraciones finales
+
+Este proyecto demuestra la implementación de microservicios funcionales con Spring Boot, persistencia en PostgreSQL, autenticación mediante JWT, ejecución con Docker Compose y pruebas mediante Postman.
+
+Los microservicios fueron construidos siguiendo buenas prácticas de arquitectura por capas y utilizando Maven para la gestión del ciclo de vida del proyecto.
