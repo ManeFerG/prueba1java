@@ -1,5 +1,6 @@
 package cl.prueba.pedidos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -33,6 +34,11 @@ public class Pedido {
     @Column(name = "usuario_id", nullable = false)
     private Long usuarioId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", insertable = false, updatable = false)
+    @JsonIgnoreProperties({"pedidos"})
+    private Usuario usuario;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -50,4 +56,7 @@ public class Pedido {
     
     public Long getUsuarioId() { return usuarioId; }
     public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
+
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 }
