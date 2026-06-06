@@ -20,7 +20,6 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String correo;
 
-    @NotBlank(message = "La contraseña no puede estar vacía")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     @Column(nullable = false)
     private String password;

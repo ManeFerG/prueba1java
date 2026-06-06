@@ -46,8 +46,8 @@ public class PedidoService {
         pedido.setDescripcion(datos.getDescripcion());
         pedido.setEstado(datos.getEstado());
         pedido.setTotal(datos.getTotal());
-        if (datos.getUsuario() != null) {
-            pedido.setUsuario(datos.getUsuario());
+        if (datos.getUsuarioId() != null) {
+            pedido.setUsuarioId(datos.getUsuarioId());
         }
         return pedidoRepository.save(pedido);
     }

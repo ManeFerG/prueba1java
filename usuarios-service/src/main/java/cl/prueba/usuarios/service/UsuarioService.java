@@ -3,8 +3,10 @@ package cl.prueba.usuarios.service;
 import cl.prueba.usuarios.dto.RegisterRequest;
 import cl.prueba.usuarios.model.Usuario;
 import cl.prueba.usuarios.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class UsuarioService {
         if (usuarioRepository.existsByCorreo(request.getCorreo())) {
             throw new RuntimeException("Ya existe un usuario con ese correo");
         }
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new RuntimeException("La contraseña no puede estar vacía");
+        }
 
         Usuario usuario = new Usuario();
         usuario.setNombre(request.getNombre());
@@ -45,6 +50,9 @@ public class UsuarioService {
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new RuntimeException("Ya existe un usuario con ese correo");
         }
+        if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
+            throw new RuntimeException("La contraseña no puede estar vacía");
+        }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         if (usuario.getRol() == null || usuario.getRol().isBlank()) {
             usuario.setRol("USER");
@@ -57,8 +65,16 @@ public class UsuarioService {
 
     public Usuario actualizar(Long id, Usuario datos) {
         Usuario usuario = buscarPorId(id);
+
+        // Si el correo cambia, verificamos que no exista en otro registro
+        if (datos.getCorreo() != null && !datos.getCorreo().equals(usuario.getCorreo())) {
+            if (usuarioRepository.existsByCorreo(datos.getCorreo())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese correo");
+            }
+            usuario.setCorreo(datos.getCorreo());
+        }
+
         usuario.setNombre(datos.getNombre());
-        usuario.setCorreo(datos.getCorreo());
         usuario.setRol(datos.getRol());
         usuario.setActivo(datos.getActivo());
         if (datos.getPassword() != null && !datos.getPassword().isBlank()) {

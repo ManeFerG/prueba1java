@@ -29,11 +29,9 @@ public class Pedido {
     @Column(nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
-    // Relación ManyToOne: Muchos pedidos pertenecen a un usuario
-    @NotNull(message = "El usuario no puede ser nulo")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @NotNull(message = "El usuarioId no puede ser nulo")
+    @Column(name = "usuario_id", nullable = false)
+    private Long usuarioId;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -50,6 +48,6 @@ public class Pedido {
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
     
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 }
