@@ -1,0 +1,15 @@
+Archivos agregados o actualizados para EP3:
+- usuarios-service/Dockerfile optimizado
+- usuarios-service/.dockerignore
+- infra-docker/docker-compose.ec2.yml
+- infra-docker/.env.ec2.example
+- .github/workflows/ci-cd-ec2.yml
+- scripts/instalar-docker-ubuntu.sh
+- scripts/desplegar-ec2.sh
+- aws/template.yaml
+- aws/lambda-sqs-java/pom.xml
+- aws/lambda-sqs-java/src/main/java/cl/prueba/lambda/ProductorHandler.java
+- aws/lambda-sqs-java/src/main/java/cl/prueba/lambda/ConsumidorHandler.java
+- aws/samconfig.toml.example
+- README_EP3.md
+- .gitignore
