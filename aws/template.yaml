@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API Gateway -> Lambda Java productora -> SQS -> Lambda Java consumidora
+
+Globals:
+  Function:
+    Runtime: java17
+    MemorySize: 512
+    Timeout: 20
+    Architectures:
+      - x86_64
+    CodeUri: lambda-sqs-java/
+
+Resources:
+  MensajesQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: prueba1java-mensajes
+      VisibilityTimeout: 60
+      MessageRetentionPeriod: 86400
+
+  ProductorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: prueba1java-productor
+      Handler: cl.prueba.lambda.ProductorHandler::handleRequest
+      Environment:
+        Variables:
+          QUEUE_URL: !Ref MensajesQueue
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt MensajesQueue.QueueName
+      Events:
+        PublicarMensaje:
+          Type: HttpApi
+          Properties:
+            Path: /mensajes
+            Method: POST
+
+  ConsumidorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: prueba1java-consumidor
+      Handler: cl.prueba.lambda.ConsumidorHandler::handleRequest
+      Events:
+        MensajesSqs:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MensajesQueue.Arn
+            BatchSize: 1
+            Enabled: true
+
+Outputs:
+  ApiUrl:
+    Description: URL para enviar mensajes al flujo asíncrono
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/mensajes"
+  QueueUrl:
+    Description: URL de la cola SQS
+    Value: !Ref MensajesQueue
+  ProductorFunctionName:
+    Value: !Ref ProductorFunction
+  ConsumidorFunctionName:
+    Value: !Ref ConsumidorFunction
