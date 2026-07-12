@@ -1,13 +1,6 @@
 name: CI-CD usuarios-service a EC2
 
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - "usuarios-service/**"
-      - "infra-docker/docker-compose.ec2.yml"
-      - "scripts/desplegar-ec2.sh"
-      - ".github/workflows/ci-cd-ec2.yml"
   workflow_dispatch:
 
 permissions:
