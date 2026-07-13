@@ -184,6 +184,34 @@ Hola mundo asíncrono. Mensaje recibido: {"mensaje":"Hola mundo desde la EP3"}
 8. Mostrar el mensaje en CloudWatch Logs.
 9. Cerrar explicando que la cola desacopla al productor del consumidor.
 
-## Importante
+## 8. Agregar Docker Swarm
 
-No subir a GitHub archivos `.pem`, contraseñas, tokens ni el archivo `.env` real. La llave privada de EC2 debe guardarse únicamente como secreto cifrado en GitHub Actions.
+Inicializar Swarm:
+```bash
+docker swarm init
+
+```
+Desplegar el stack:
+```bash
+docker stack deploy -c docker-compose.yml prueba1java
+
+```
+Ver los servicios:
+```bash
+docker service ls
+
+```
+Ver los nodos:
+```bash
+docker node ls
+
+```
+Escalar el microservicio de usuarios:
+```bash
+docker service scale prueba1java_usuarios-service=3
+
+```
+Reducir nuevamente las réplicas:
+```bash
+docker service scale prueba1java_usuarios-service=2
+```

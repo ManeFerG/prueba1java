@@ -34,6 +34,12 @@ https://github.com/ManeFerG/prueba1java
 * Docker Compose
 * Maven
 * Postman
+* Docker Swarm
+* GitHub Actions
+* AWS Lambda
+* Amazon SQS
+* AWS SAM
+* Amazon EC2
 
 ---
 

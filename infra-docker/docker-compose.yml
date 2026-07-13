@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgres:16
-    container_name: prueba-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -17,12 +16,9 @@ services:
       retries: 5
 
   usuarios-service:
-    build:
-      context: ../usuarios-service
-    container_name: usuarios-service
+    image: valefer/prueba1java-usuarios:latest
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/usuarios_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -30,14 +26,13 @@ services:
       JWT_SECRET: clave-super-secreta-de-prueba-para-firmar-jwt-2026
     ports:
       - "8081:8081"
+    deploy:
+      replicas: 2
 
   pedidos-service:
-    build:
-      context: ../pedidos-service
-    container_name: pedidos-service
+    image: valefer/prueba1java-pedidos:latest
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pedidos_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -45,6 +40,7 @@ services:
       JWT_SECRET: clave-super-secreta-de-prueba-para-firmar-jwt-2026
     ports:
       - "8082:8082"
-
+    deploy:
+      replicas: 2
 volumes:
   postgres_data:
